@@ -51,8 +51,8 @@ class StudentDetails(models.Model):
     YEAR_CHOICES = []
     for r in range(1980, (datetime.datetime.now().year+1)):
         YEAR_CHOICES.append((r,r))
-    sd_grades = models.ForeignKey(Grades, on_delete= models.SET_NULL)
-    sd_sections = models.ForeignKey(Sections, on_delete= models.SET_NULL)
+    sd_grades = models.ForeignKey(Grades, on_delete= models.SET_NULL, null = True, blank=False)
+    sd_sections = models.ForeignKey(Sections, on_delete= models.SET_NULL, null = True, blank=False)
     sd_academic_year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year)
     student_profile_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     school_profile_id = models.ForeignKey(School, on_delete=models.CASCADE)
@@ -60,8 +60,8 @@ class StudentDetails(models.Model):
 
 
 class SchoolGradeDetails(models.Model):
-    grades_id = models.ForeignKey(Grades, on_delete= models.SET_NULL)
-    sections_id = models.ForeignKey(Sections, on_delete= models.SET_NULL)
+    grades_id = models.ForeignKey(Grades, on_delete= models.SET_NULL, null = True)
+    sections_id = models.ForeignKey(Sections, on_delete= models.SET_NULL, null = True)
     school_id = models.ForeignKey(School, on_delete= models.CASCADE)
 
 
