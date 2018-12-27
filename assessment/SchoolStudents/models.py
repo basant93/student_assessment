@@ -18,6 +18,9 @@ class Student(models.Model):
     student_profile_image_url = models.URLField(null=True, blank=True)
     student_gender = models.CharField(max_length=6, choices = GENDER_CHOICES, blank= True, null= True)
 
+    def __str__(self):
+        return self.auth_user.username
+
 
 class Grades(models.Model):
     GRADE_CHOICES = (
@@ -25,7 +28,13 @@ class Grades(models.Model):
         ('Class 5', '5'), ('Class 6', '6'), ('Class 7', '7'), ('Class 8', '8'),
         ('Class 9', '9'), ('Class 10', '10'), ('Class 11', '11'), ('Class 12', '12')
         )
-    grade_name = models.CharField(max_length=10, choices = GRADE_CHOICES, blank = False)
+    
+    grade_name = models.CharField(max_length=10, choices = GRADE_CHOICES, blank = False, unique = True)
+
+
+
+    def __str__(self):
+        return self.grade_name
 
 class Sections(models.Model):
     GRADE_CHOICES = (
@@ -35,7 +44,10 @@ class Sections(models.Model):
         ('S', 'S'), ('T', 'T'),('U', 'U'), ('V', 'V'), ('W', 'W'), ('X', 'X'),
         ('Y', 'Y'), ('Z', 'Z')
         )
-    grade_name = models.CharField(max_length=10, choices = GRADE_CHOICES, blank = False)
+    grade_name = models.CharField(max_length=10, choices = GRADE_CHOICES, blank = False, unique = True)
+
+    def __str__(self):
+        return self.grade_name
 
 class School(models.Model):
     school_contact_regex = RegexValidator(regex=r'[789]\d{9}$', message="Please enter valid phone number.")
@@ -44,6 +56,9 @@ class School(models.Model):
     school_address = models.CharField(max_length = 500, blank = False)
     school_pincode = models.CharField(max_length = 6, blank = True, null=True)
     school_contact_no = models.CharField(validators=[school_contact_regex], max_length = 10 , blank=True, null= True)
+
+    def __str__(self):
+        return self.school_name
 
 
 
@@ -57,12 +72,19 @@ class StudentDetails(models.Model):
     student_profile_id = models.ForeignKey(Student, on_delete=models.CASCADE)
     school_profile_id = models.ForeignKey(School, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.school_profile_id.school_name + " - " + self.student_profile_id.auth_user.username
+
 
 
 class SchoolGradeDetails(models.Model):
     grades_id = models.ForeignKey(Grades, on_delete= models.SET_NULL, null = True)
     sections_id = models.ForeignKey(Sections, on_delete= models.SET_NULL, null = True)
     school_id = models.ForeignKey(School, on_delete= models.CASCADE)
+
+    def __str__(self):
+        return self.school_id.school_name + " - " + self.grades_id.grade_name + " - " + self.sections_id.grade_name
+
 
 
 
