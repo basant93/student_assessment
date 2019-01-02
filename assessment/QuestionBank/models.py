@@ -17,6 +17,7 @@ class StudentResponse(models.Model):
     is_present = models.BooleanField(default=False)
 
 
+
 class QuestionBanks(models.Model):
     ques_grades = models.OneToOneField(Grades,on_delete=models.PROTECT, blank=True, null=True)
     ques_sections = models.OneToOneField(Sections,on_delete=models.PROTECT, blank=True, null=True)
@@ -32,8 +33,7 @@ class QuestionBanks(models.Model):
     exam_end_time = models.TimeField(blank = True, auto_now_add=True)
 
 
-class StudentPresence(models.Model):
-    ques_bank = 
+
 
 
 
