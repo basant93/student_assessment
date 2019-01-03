@@ -22,7 +22,7 @@ class QuestionBanks(models.Model):
     ques_grades = models.OneToOneField(Grades,on_delete=models.PROTECT, blank=True, null=True)
     ques_sections = models.OneToOneField(Sections,on_delete=models.PROTECT, blank=True, null=True)
     total_marks = models.IntegerField(default=100, null=True)
-    total_time = models.DateTimeField(blank= True)
+    total_time = models.TimeField(blank= True)
     general_instructions = models.TextField(blank=True, null=True)
     ques_bank_title = models.CharField(max_length=200,  blank = True)
     subject = models.OneToOneField(Subject, on_delete=models.SET_NULL, blank = True, null=True)
@@ -43,9 +43,10 @@ class StudentResponse(models.Model):
     is_present = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.question_bank + " - " + self.student.auth_user.username
+        return self.question_bank.ques_bank_title + " - " + self.student.auth_user.username
 
 class QuestionsSections(models.Model):
+    ques_bank_section = models.ForeignKey(QuestionBanks, on_delete=models.CASCADE, blank=True, null=True) 
     section_name = models.CharField(max_length=200,  blank =True)
     comprehension_desc = models.TextField(blank=True)
 
