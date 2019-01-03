@@ -4,10 +4,10 @@ class StudentProfileBaseSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
-    student_gender = serializers.CharField()
-    student_contact_no = serializers.CharField()
-    student_profile_image_url = serializers.URLField()
-    student_pincode = serializers.CharField()
+    user_gender = serializers.CharField()
+    user_contact_no = serializers.CharField()
+    user_profile_image_url = serializers.URLField()
+    user_pincode = serializers.CharField()
     
 
 

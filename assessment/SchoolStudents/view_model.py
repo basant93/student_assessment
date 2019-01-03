@@ -1,4 +1,4 @@
-from .models import Student
+from .models import UserProfile
 
 class StudentProfileResponse(object):
     success = None
@@ -11,10 +11,10 @@ class StudentProfileInfo(object):
     first_name = None
     last_name = None
     email = None
-    student_gender = None
-    student_contact_no = None
-    student_profile_image_url = None
-    student_pincode = None
+    user_gender = None
+    user_contact_no = None
+    user_profile_image_url = None
+    user_pincode = None
 
     def __init__(self, user_obj):
         self.first_name = user_obj.first_name
@@ -22,14 +22,14 @@ class StudentProfileInfo(object):
         self.email = user_obj.email
         
         try:
-            student_profile_obj = Student.objects.get(auth_user = user_obj)
+            user_profile_obj = UserProfile.objects.get(auth_user = user_obj)
         except:
-            student_profile_obj = None
-        if student_profile_obj is not None:
-            self.student_gender = student_profile_obj.student_gender
-            self.student_contact_no = student_profile_obj.student_contact_no
-            self.student_profile_image_url = student_profile_obj.student_profile_image_url
-            self.student_pincode = student_profile_obj.student_pincode
+            user_profile_obj = None
+        if user_profile_obj is not None:
+            self.user_gender = user_profile_obj.user_gender
+            self.user_contact_no = user_profile_obj.user_contact_no
+            self.user_profile_image_url = user_profile_obj.user_profile_image_url
+            self.user_pincode = user_profile_obj.user_pincode
 
 
 

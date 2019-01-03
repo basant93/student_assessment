@@ -1,10 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.core.validators import RegexValidator
 import datetime
+from assessment import constant
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.conf import settings
+from django.db import transaction
 
 # Create your models here.
-class Student(models.Model):
+class UserProfile(models.Model):
     contact_regex = RegexValidator(regex=r'[789]\d{9}$', message="Phone number is not valid.")
     GENDER_CHOICES = (
         ('Male', 'Male'),
@@ -13,10 +18,11 @@ class Student(models.Model):
     )
 
     auth_user = models.OneToOneField(User, on_delete=models.CASCADE)
-    student_contact_no = models.CharField(validators=[contact_regex], max_length = 10 , blank=True, null= True)
-    student_pincode = models.CharField(max_length = 6, blank = True, null=True)
-    student_profile_image_url = models.URLField(null=True, blank=True)
-    student_gender = models.CharField(max_length=6, choices = GENDER_CHOICES, blank= True, null= True)
+    user_contact_no = models.CharField(validators=[contact_regex], max_length = 10 , blank=True, null= True)
+    user_pincode = models.CharField(max_length = 6, blank = True, null=True)
+    user_profile_image_url = models.URLField(null=True, blank=True)
+    user_gender = models.CharField(max_length=6, choices = GENDER_CHOICES, blank= True, null= True)
+    user_group = models.OneToOneField(Group ,null= True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.auth_user.username
@@ -69,7 +75,7 @@ class StudentDetails(models.Model):
     sd_grades = models.ForeignKey(Grades, on_delete= models.SET_NULL, null = True, blank=False)
     sd_sections = models.ForeignKey(Sections, on_delete= models.SET_NULL, null = True, blank=False)
     sd_academic_year = models.IntegerField(choices=YEAR_CHOICES, default=datetime.datetime.now().year)
-    student_profile_id = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student_profile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     school_profile_id = models.ForeignKey(School, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -86,6 +92,39 @@ class SchoolGradeDetails(models.Model):
         return self.school_id.school_name + " - " + self.grades_id.grade_name + " - " + self.sections_id.grade_name
 
 
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def add_user_profile(sender, instance=None, **kwargs):
+    """
+    add user profile on addition of new User.
+    """
+    
+    user_obj = User.objects.get(id= instance.id)
+    # gr = Group.objects.get(name = constant.get_student_group_name())
 
+    # UserProfile.objects.get_or_create(auth_user=user_obj, user_group=gr)
+
+    # prof = UserProfile(auth_user=user_obj)
+    # gr = Group.objects.get(name = constant.get_student_group_name())
+    # prof.user_group = gr
+    # try:
+    #     prof.save()
+    # except:
+    #     print("User profile saved failed")
+
+    try:
+        # Duplicates should be prevented.
+        with transaction.atomic():
+            prof = UserProfile(auth_user=user_obj)
+            gr = Group.objects.get(name = constant.get_student_group_name())
+            prof.user_group = gr
+            prof.save()
+        
+    except:
+        pass
+
+    
+   
+  
+    
 
 
