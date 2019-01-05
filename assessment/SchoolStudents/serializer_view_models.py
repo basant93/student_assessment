@@ -1,5 +1,13 @@
 from rest_framework import serializers
 
+class GradesMainSerializer(serializers.Serializer):
+    grade_name = serializers.CharField()
+
+
+class SectionMainSerializer(serializers.Serializer):
+    grade_name = serializers.CharField()
+
+
 class StudentProfileBaseSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()

@@ -7,6 +7,7 @@ class StudentProfileResponse(object):
     status_code = None
 
 
+
 class StudentProfileInfo(object):
     first_name = None
     last_name = None
