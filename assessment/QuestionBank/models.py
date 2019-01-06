@@ -14,10 +14,6 @@ class Subject(models.Model):
         return self.sub_name
 
 
-
-
-
-
 class QuestionBanks(models.Model):
     ques_grades = models.OneToOneField(Grades,on_delete=models.PROTECT, blank=True, null=True)
     ques_sections = models.OneToOneField(Sections,on_delete=models.PROTECT, blank=True, null=True)
@@ -51,7 +47,7 @@ class QuestionsSections(models.Model):
     comprehension_desc = models.TextField(blank=True)
 
     def __str__(self):
-        return self.section_name 
+        return  str(self.ques_bank_section) + " - "+  self.section_name 
 
 
 class Question(models.Model):
@@ -60,7 +56,7 @@ class Question(models.Model):
         (constant.get_match_the_following_name(), 'Match the Following'), (constant.get_comprehension_name(), 'Comprehension')
         )
     
-    question_type = models.CharField(max_length=50, choices = QUESTION_TYPE_CHOICES, blank = False, unique = True)
+    question_type = models.CharField(max_length=50, choices = QUESTION_TYPE_CHOICES, blank = False)
     question_title = models.TextField(blank=False)
     question_marks = models.IntegerField(blank=False)
     section = models.ForeignKey(QuestionsSections, blank=True,  null=True,  on_delete= models.SET_NULL)
@@ -78,11 +74,15 @@ class Answer(models.Model):
         return self.option_one 
 
 class Question_Answer(models.Model):
+    auth_user = models.ForeignKey(User, on_delete=models.CASCADE, null= True)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer = models.ForeignKey(Answer, on_delete = models.SET_NULL, blank = True, null=True)
 
     def __str__(self):
-        return self.question.question_title
+        return self.question.question_title + " - " +str(self.answer.option_one)
+
+    class Meta:
+        unique_together = ('question', 'answer', 'auth_user')
 
 
 class StudentQuestionResponse(models.Model):
