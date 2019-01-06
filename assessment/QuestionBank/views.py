@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-from SchoolStudents.models import UserProfile
+from SchoolStudents.models import UserProfile, Grades, Sections, School, StudentDetails
 from .view_models import AssignmentMainResponse, QuestionBankDataResponse, QuestionAnswerDataResponse, StudentResponseSaved, StudentMarksResponse, AllStudentMarksMainResponse
 from QuestionBank.models import QuestionBanks, Question_Answer, Question, Answer, StudentResponse
 from .serializer_view_models import QuestionBankMainSerializer, QuestionAnswerMainSerializer, StudentResponserMainSerializer, StudentMarksMainSerializer, AllStudentMarksMainSerializer
@@ -152,6 +152,49 @@ def get_all_student_result(request):
 
 
 
+@api_view(['POST'])
+def get_all_student_list(request):
+
+    request_data = JSONParser().parse(request)
+
+    try:
+        if(request_data['grade'] is not '' and request_data['section'] is not '' and request_data['school_id'] is not ''):
+            grades = Grades.objects.filter(grade_name = request_data['grade']).first()
+            sections = Sections.objects.filter(grade_name = request_data['section']).first()
+            school = School.objects.filter(id = request_data['school_id']).first()
+
+            student_details = list(StudentDetails.objects.filter(sd_grades = grades, sd_sections=sections, school_profile_id=school))
+
+            student_details_list = []
+
+            for student in student_details:
+                student_details_list.append(student.student_profile)
+        question_bank = QuestionBanks.objects.get(id = request_data['question_bank_id'])
+
+    except ObjectDoesNotExist:
+        student_details_list = None
+        question_bank = None
+    
+    
+
+    for profile in request_data['student_list']:
+        user_obj = User.objects.get(id = profile['id'])
+        user_profile_obj = UserProfile.objects.get(auth_user = user_obj)
+        student_details_list.append(user_profile_obj)
+        student_response = StudentResponse(question_bank = question_bank , student = user_profile_obj , marks_scored = 0 , is_present = False)
+        student_response.save()
+    
+
+    message = "Student has been assigned the test successfully."
+
+    main_response = AssignmentMainResponse()
+    main_response.success = True
+    main_response.error_code = 0
+    main_response.status_code = status.HTTP_200_OK
+    main_response.data = StudentResponseSaved(message)
+    serializer = StudentResponserMainSerializer(main_response)
+
+    return Response(serializer.data)
 
 
 

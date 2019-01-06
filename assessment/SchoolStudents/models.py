@@ -88,6 +88,9 @@ class SchoolGradeDetails(models.Model):
     sections_id = models.ForeignKey(Sections, on_delete= models.SET_NULL, null = True)
     school_id = models.ForeignKey(School, on_delete= models.CASCADE)
 
+    class Meta:
+        unique_together = ('grades_id', 'sections_id', 'school_id')
+
     def __str__(self):
         return self.school_id.school_name + " - " + self.grades_id.grade_name + " - " + self.sections_id.grade_name
 

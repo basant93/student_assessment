@@ -181,3 +181,12 @@ class AllStudentMarksMainResponse(object):
             ret_val.append(student_result)
         
         return ret_val
+
+
+class StudentAssignedMainResponse(object):
+
+    user_id = None
+    user_name = None
+    user_email = None
+    
+     
